@@ -154,7 +154,8 @@ pub fn main() !void {
     // std.debug.print("start: {d} -- end: {d}\n", .{ buf_reader.start, buf_reader.end });
     // std.debug.print("res: {d}\n", .{res});
 
-    for (line.toOwnedSlice, 0..) |l, idx| {
+    const arr = try line.toOwnedSlice();
+    for (arr, 0..) |l, idx| {
         std.debug.print("line[{d}]: {s}\n", .{ idx, l });
     }
 

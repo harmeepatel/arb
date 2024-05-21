@@ -1,12 +1,19 @@
 const std = @import("std");
-const raylib_zig = "libs/raylib-zig";
-const rl = @import("libs/raylib-zig/build.zig");
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    const raylib = rl.getModule(b, "libs/raylib-zig");
-    const raylib_math = rl.math.getModule(b, "libs/raylib-zig");
+
+    // raylib
+    const raylib_dep = b.dependency("raylib-zig", .{
+        .target = target,
+        .optimize = optimize,
+    });
+
+    const raylib = raylib_dep.module("raylib"); // main raylib module
+    const raylib_math = raylib_dep.module("raylib-math"); // raymath module
+    const rlgl = raylib_dep.module("rlgl"); // rlgl module
+    const raylib_artifact = raylib_dep.artifact("raylib"); // raylib C library
 
     const exe = b.addExecutable(.{
         .name = "zig",
@@ -15,13 +22,14 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    rl.link(b, exe, target, optimize);
-    exe.addModule("raylib", raylib);
-    exe.addModule("raylib_math", raylib_math);
+    exe.linkLibrary(raylib_artifact);
+    exe.root_module.addImport("raylib", raylib);
+    exe.root_module.addImport("raylib-math", raylib_math);
+    exe.root_module.addImport("rlgl", rlgl);
+
+    b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
-
-    b.installArtifact(exe);
 }
