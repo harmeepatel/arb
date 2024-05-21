@@ -1,0 +1,11 @@
+{
+    "name": "test recipe",
+    "brewer": "V69",
+    "grind": "medium",
+    "coffee": 20,
+    "water_ml": 200,
+    "water_temp": 90,
+    "total_time": [200, 0],
+    "before_event": null,
+    "en": "one"
+}

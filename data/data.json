@@ -1,0 +1,167 @@
+[
+    {
+        "name": "Tetsu 4:6",
+        "brewer": "V60",
+        "grind": "coarse",
+        "coffee": 15,
+        "water_ml": 225,
+        "water_temp": 92,
+        "total_time": [
+            210,
+            0
+        ],
+        "before_event": null,
+        "events": [
+            {
+                "event_type": "normal",
+                "time": 0,
+                "name": "bloom",
+                "name_note": "Sweetness",
+                "quantity": {
+                    "value": 30,
+                    "tare": false
+                },
+                "duration": 10,
+                "range": null,
+                "note": null
+            },
+            {
+                "event_type": "normal",
+                "time": 45,
+                "name": "pour",
+                "name_note": "Acidity",
+                "quantity": {
+                    "value": 90,
+                    "tare": false
+                },
+                "duration": 15,
+                "range": null,
+                "note": null
+            },
+            {
+                "event_type": "normal",
+                "time": 90,
+                "name": "pour",
+                "name_note": null,
+                "quantity": {
+                    "value": 135,
+                    "tare": false
+                },
+                "duration": 15,
+                "range": null,
+                "note": null
+            },
+            {
+                "event_type": "normal",
+                "time": 135,
+                "name": "pour",
+                "name_note": null,
+                "quantity": {
+                    "value": 180,
+                    "tare": false
+                },
+                "duration": 15,
+                "range": null,
+                "note": null
+            },
+            {
+                "event_type": "normal",
+                "time": 180,
+                "name": "pour",
+                "name_note": null,
+                "quantity": {
+                    "value": 225,
+                    "tare": false
+                },
+                "duration": 15,
+                "range": null,
+                "note": null
+            },
+            {
+                "event_type": "short",
+                "time": 210,
+                "name": "stop_brew",
+                "name_note": null,
+                "quantity": null,
+                "duration": null,
+                "range": null,
+                "note": null
+            }
+        ]
+    },
+
+    {
+        "name": "Ārāmse",
+        "brewer": "South Indian Filter",
+        "grind": "fine",
+        "coffee": 30,
+        "water_ml": 180,
+        "water_temp": 85,
+        "total_time": [
+            420,
+            600
+        ],
+        "before_event": {
+            "event_type": "short",
+            "name": "distribute"
+        },
+        "events": [
+            {
+                "event_type": "normal",
+                "time": 0,
+                "name": "bloom",
+                "name_note": null,
+                "quantity": {
+                    "value": 60,
+                    "tare": false
+                },
+                "duration": 10,
+                "range": null,
+                "note": null
+            },
+            {
+                "event_type": "short",
+                "time": 11,
+                "name": "swirl",
+                "name_note": null,
+                "quantity": null,
+                "duration": null,
+                "range": null,
+                "note": null
+            },
+            {
+                "event_type": "normal",
+                "time": 45,
+                "name": "pour",
+                "name_note": null,
+                "quantity": {
+                    "value": 180,
+                    "tare": false
+                },
+                "duration": 30,
+                "range": null,
+                "note": null
+            },
+            {
+                "event_type": "short",
+                "time": 76,
+                "name": "cap_on",
+                "name_note": null,
+                "quantity": null,
+                "duration": null,
+                "range": null,
+                "note": null
+            },
+            {
+                "event_type": "normal",
+                "time": 77,
+                "name": "draw_down",
+                "name_note": null,
+                "quantity": null,
+                "duration": 343,
+                "range": 600,
+                "note": null
+            }
+        ]
+    }
+]
