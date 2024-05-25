@@ -7,3 +7,7 @@ build:
 	--export=allocBytes \
 	--export=freeBytes \
 	-Doptimize=ReleaseSmall -Dstrip=true
+
+run:
+	clear
+	zig build run

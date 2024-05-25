@@ -25,7 +25,7 @@ export interface Event {
     quantity?: Quantity
     duration?: number
     range?: number
-    note: any
+    note?: string
 }
 
 export interface Quantity {
