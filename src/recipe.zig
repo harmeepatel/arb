@@ -42,6 +42,16 @@ pub const Quantity = packed struct(u16) {
     value: u15,
 };
 
+pub const InternalEvent = struct {
+    event_type: EventType,
+    name: Legend,
+    time: u16,
+    name_note: ?[]const u8 = null,
+    quantity: ?Quantity,
+    duration: ?u16,
+    range: ?u16 = null,
+    note: ?[]const u8 = null,
+};
 pub const Event = struct {
     event_type: EventType,
     name: Legend,
@@ -86,7 +96,7 @@ pub const BeforeEvent = struct {
     name: Legend,
 };
 
-pub const Recipe = struct {
+const InternalRecipe = struct {
     name: []const u8,
     brewer: []const u8,
     grind: []const u8,
@@ -96,13 +106,33 @@ pub const Recipe = struct {
     total_time: [2]u16,
     before_event: ?BeforeEvent = null,
     events: Events,
+};
+pub const Recipe = struct {
+    name: [:0]const u8,
+    brewer: [:0]const u8,
+    grind: [:0]const u8,
+    coffee: u8,
+    water_ml: u16,
+    water_temp: u8,
+    total_time: [2]u16,
+    before_event: ?BeforeEvent = null,
+    events: Events,
 
-    pub fn init(alloc: std.mem.Allocator, json_recipe: []const u8, recipe_buf: *Recipe) !void {
-        const parsed = try std.json.parseFromSlice(Recipe, alloc, json_recipe, .{
+    pub fn init(alloc: std.mem.Allocator, json_recipe: []const u8) !Recipe {
+        const parsed = try std.json.parseFromSlice(InternalRecipe, alloc, json_recipe, .{
             .allocate = .alloc_always,
             .ignore_unknown_fields = true,
         });
-        // defer alloc.free(parsed);
-        recipe_buf.* = parsed.value;
+        return Recipe{
+            .name = try alloc.dupeZ(u8, parsed.value.name),
+            .brewer = try alloc.dupeZ(u8, parsed.value.brewer),
+            .grind = try alloc.dupeZ(u8, parsed.value.grind),
+            .coffee = parsed.value.coffee,
+            .water_ml = parsed.value.water_ml,
+            .water_temp = parsed.value.water_temp,
+            .total_time = parsed.value.total_time,
+            .before_event = parsed.value.before_event,
+            .events = parsed.value.events,
+        };
     }
 };
