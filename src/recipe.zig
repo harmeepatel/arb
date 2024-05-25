@@ -52,26 +52,28 @@ pub const InternalEvent = struct {
     range: ?u16 = null,
     note: ?[]const u8 = null,
 };
+
 pub const Event = struct {
     event_type: EventType,
     name: Legend,
     time: u16,
-    name_note: ?[]const u8 = null,
+    name_note: ?[:0]const u8 = null,
     quantity: ?Quantity,
     duration: ?u16,
     range: ?u16 = null,
-    note: ?[]const u8 = null,
+    note: ?[:0]const u8 = null,
 
-    pub fn initNormalEvent(name: Legend, time: u16, name_note: ?[]const u8, quantity: ?Quantity, duration: ?u16, range: ?u16, note: ?[]const u8) Event {
+    // pub fn initNormalEvent(name: Legend, time: u16, name_note: ?[]const u8, quantity: ?Quantity, duration: ?u16, range: ?u16, note: ?[]const u8) Event {
+    pub fn initNormalEvent(event: InternalEvent) Event {
         return .{
             .event_type = .normal,
-            .time = time,
-            .name = name,
-            .name_note = name_note,
-            .quantity = quantity,
-            .duration = duration,
-            .range = range,
-            .note = note,
+            .time = event.time,
+            .name = event.name,
+            .name_note = event.name_note,
+            .quantity = event.quantity,
+            .duration = event.duration,
+            .range = event.range,
+            .note = event.note,
         };
     }
 
@@ -107,6 +109,7 @@ const InternalRecipe = struct {
     before_event: ?BeforeEvent = null,
     events: Events,
 };
+
 pub const Recipe = struct {
     name: [:0]const u8,
     brewer: [:0]const u8,
