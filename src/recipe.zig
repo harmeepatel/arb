@@ -42,7 +42,7 @@ pub const Quantity = packed struct(u16) {
     value: u15,
 };
 
-pub const InternalEvent = struct {
+const InternalEvent = struct {
     event_type: EventType,
     name: Legend,
     time: u16,
@@ -77,13 +77,14 @@ pub const Event = struct {
         };
     }
 
-    pub fn initSmallEvent(name: Legend, time: u16, name_note: ?[]const u8, note: ?[]const u8) Event {
+    // pub fn initSmallEvent(name: Legend, time: u16, name_note: ?[]const u8, note: ?[]const u8) Event {
+    pub fn initSmallEvent(event: InternalEvent) Event {
         return .{
             .event_type = .short,
-            .name = name,
-            .time = time,
-            .name_note = name_note,
-            .note = note,
+            .name = event.name,
+            .time = event.time,
+            .name_note = event.name_note,
+            .note = event.note,
             .quantity = null,
             .duration = null,
             .range = null,
