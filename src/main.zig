@@ -84,7 +84,7 @@ fn drawLabel(r: *const Recipe) !void {
     labelText(&pos, "Author", r.name);
     labelText(&pos, "Brewer", r.brewer);
     labelText(&pos, "Coffee", coffee_str);
-    labelText(&pos, "Grind Size", r.grind);
+    labelText(&pos, "Grind Size{", r.grind);
 }
 
 fn labelText(pos: *rl.Vector2, label: [:0]const u8, value: [:0]const u8) void {
