@@ -6,8 +6,8 @@ const Recipe = @import("recipe.zig").Recipe;
 
 const AspectRation = struct { x: f32, y: f32 };
 
-const recipe_buf_size = 1024 * 8;
-const edge_padding: f32 = 64.0;
+const buf_size_recipe = 1024 * 8;
+const padding_edge: f32 = 64.0;
 
 const path_json_recipe = "data/recipe.json";
 const path_font_regular = "font/line_seed_sans/LINESeedSans_Rg.otf";
@@ -33,7 +33,7 @@ pub fn main() !void {
         rl.closeWindow();
     }
 
-    const json_string = try utils.readInputFile(aapa_alloc, path_json_recipe);
+    const json_string = utils.readInputFile(aapa_alloc, path_json_recipe);
     defer aapa_alloc.free(json_string);
 
     const r = try Recipe.init(aapa_alloc, json_string);
@@ -71,34 +71,35 @@ fn update(r: *const Recipe) !void {
 }
 
 fn drawLabel(r: *const Recipe) !void {
-    var pos = rl.Vector2.init(edge_padding, edge_padding);
+    var pos = rl.Vector2.init(padding_edge, padding_edge);
     const rect = rl.Rectangle.init(pos.x, pos.y, aspect_ratio.x * 200, aspect_ratio.y * 200);
     const color = rl.Color.fromHSV(11, 0.25, 1);
 
-    const max_len = 3;
-    var buf: [max_len]u8 = undefined;
-    const coffee_str: [:0]const u8 = try std.fmt.bufPrintZ(&buf, "{d}", .{r.coffee});
+    var buf_recipe_coffee_weight: [4]u8 = undefined;
+    const str_coffee: [:0]const u8 = try std.fmt.bufPrintZ(&buf_recipe_coffee_weight, "{d}g", .{r.coffee});
 
     rl.drawRectangleRounded(rect, 0.2, 128, color);
     // labelText modifyies the pos
     labelText(&pos, "Author", r.name);
     labelText(&pos, "Brewer", r.brewer);
-    labelText(&pos, "Coffee", coffee_str);
-    labelText(&pos, "Grind Size{", r.grind);
+    labelText(&pos, "Coffee", str_coffee);
+    labelText(&pos, "Grind Size", r.grind);
+    // labelText(&pos, "Water", r.water_temp);
+    labelText(&pos, "Filter", r.filter);
 }
 
 fn labelText(pos: *rl.Vector2, label: [:0]const u8, value: [:0]const u8) void {
     const y_off = 8;
-    const font_size = 32;
-    const text_padding = rl.Vector2.init(edge_padding / 3, edge_padding / 3 - y_off);
-    const m = rl.measureTextEx(font_regular, label, font_size, 0);
+    const size_font = 32;
+    const padding_text = rl.Vector2.init(padding_edge / 3, padding_edge / 3 - y_off);
+    const m = rl.measureTextEx(font_regular, label, size_font, 0);
 
-    const label_pos = rl.Vector2.init(pos.x + text_padding.x, pos.y + text_padding.y);
-    rl.drawTextEx(font_regular, label, label_pos, font_size, 0, rl.Color.black);
+    const label_pos = rl.Vector2.init(pos.x + padding_text.x, pos.y + padding_text.y);
+    rl.drawTextEx(font_regular, label, label_pos, size_font, 0, rl.Color.black);
 
     // const value_pos = rl.Vector2.init(pos.x + text_padding.x + m.x + m.y, pos.y + text_padding.y);
-    const value_pos = rl.Vector2.init(256, pos.y + text_padding.y);
-    rl.drawTextEx(font_bold, value, value_pos, font_size, 0, rl.Color.black);
+    const value_pos = rl.Vector2.init(256, pos.y + padding_text.y);
+    rl.drawTextEx(font_bold, value, value_pos, size_font, 0, rl.Color.black);
 
     pos.y = pos.y + m.y;
 }
