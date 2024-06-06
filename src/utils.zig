@@ -38,13 +38,13 @@ pub fn fatal(comptime msg: []const u8, args: anytype) noreturn {
     exit(1);
 }
 
-pub fn StructDupeZ(comptime in: type) type {
+pub fn StructDupeZ(comptime T: type) type {
     const StringZ = [:0]const u8;
     const String = []const u8;
-    const RecipeFields = std.meta.fields(in);
+    const StructFields = std.meta.fields(T);
 
-    var fields: [RecipeFields.len]std.builtin.Type.StructField = undefined;
-    for (RecipeFields, 0..RecipeFields.len) |Field, i| {
+    var fields: [StructFields.len]std.builtin.Type.StructField = undefined;
+    for (StructFields, 0..StructFields.len) |Field, i| {
         if (Field.type == String) {
             Field.type = StringZ;
         }

@@ -103,7 +103,6 @@ fn labelText2(r: *const Recipe) *const [3][]const u8 {
     a.put(r.name, "asdf") catch |err| {
         utils.fatal("\nunable to put in hashmap with error: {s}\n", .{@errorName(err)});
     };
-
     const labels = [_][]const u8{ "asdf", "asdfasdf", "asdfsa" };
     // print("\nlabels: {s}\n", .{labels});
     // print("\nhashmap: {s}\n", .{a.get(r.name).?});
