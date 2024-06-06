@@ -36,7 +36,7 @@ pub fn main() !void {
     const json_string = utils.readInputFile(aapa_alloc, path_json_recipe);
     defer aapa_alloc.free(json_string);
 
-    const r = try Recipe.init(aapa_alloc, json_string);
+    const r = Recipe.init(aapa_alloc, json_string);
     // defer aapa_alloc.free(r); // TODO: fix this, cannot free anything till the program ends
 
     init();
@@ -89,6 +89,7 @@ fn drawLabel(r: *const Recipe) !void {
 
     _ = labelText2(r);
 }
+
 fn labelText2(r: *const Recipe) *const [3][]const u8 {
     var buf_recipe_coffee_weight: [4]u8 = undefined;
     const str_coffee: [:0]const u8 = std.fmt.bufPrintZ(&buf_recipe_coffee_weight, "{d}g", .{r.coffee_g}) catch |err| {

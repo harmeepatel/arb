@@ -1,6 +1,7 @@
-const Allocator = @import("std").mem.Allocator;
-const exit = @import("std").process.exit;
-const debug_print = @import("std").debug.print;
+const std = @import("std");
+const Allocator = std.mem.Allocator;
+const exit = std.process.exit;
+const debug_print = std.debug.print;
 
 pub fn readInputFile(allocator: Allocator, path: []const u8) []const u8 {
     const file = @import("std").fs.cwd().openFile(path, .{}) catch |err| {
@@ -35,4 +36,33 @@ pub fn getChars() [char_len]i32 {
 pub fn fatal(comptime msg: []const u8, args: anytype) noreturn {
     debug_print("\n" ++ msg ++ "\n", args);
     exit(1);
+}
+
+pub fn StructDupeZ(comptime in: type) type {
+    const StringZ = [:0]const u8;
+    const String = []const u8;
+    const RecipeFields = std.meta.fields(in);
+
+    var fields: [RecipeFields.len]std.builtin.Type.StructField = undefined;
+    for (RecipeFields, 0..RecipeFields.len) |Field, i| {
+        if (Field.type == String) {
+            Field.type = StringZ;
+        }
+
+        fields[i] = .{
+            .name = Field.name,
+            .type = Field.type,
+            .default_value = null,
+            .is_comptime = false,
+            .alignment = 0,
+        };
+    }
+    return @Type(.{
+        .Struct = .{
+            .layout = .auto,
+            .fields = fields[0..],
+            .decls = &[_]std.builtin.Type.Declaration{},
+            .is_tuple = false,
+        },
+    });
 }
