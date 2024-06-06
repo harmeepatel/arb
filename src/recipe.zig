@@ -1,4 +1,6 @@
 const std = @import("std");
+const print = std.debug.print;
+const utils = @import("utils.zig");
 
 pub const Legend = enum {
     bloom,
@@ -99,44 +101,64 @@ pub const BeforeEvent = struct {
     name: Legend,
 };
 
-const InternalRecipe = struct {
-    name: []const u8,
-    brewer: []const u8,
-    grind: []const u8,
-    filter: []const u8,
-    coffee: u8,
-    water_ml: u16,
-    water_temp: u8,
-    total_time: [2]u16,
-    before_event: ?BeforeEvent = null,
-    events: Events,
-};
+fn MakeRecipeDupeZ(comptime in: type) type {
+    const StringZ = [:0]const u8;
+    const String = []const u8;
+    const RecipeFields = std.meta.fields(in);
+
+    var fields: [RecipeFields.len]std.builtin.Type.StructField = undefined;
+    for (RecipeFields, 0..RecipeFields.len) |Field, i| {
+        if (Field.type == String) {
+            Field.type = StringZ;
+        }
+
+        fields[i] = .{
+            .name = Field.name,
+            .type = Field.type,
+            .default_value = null,
+            .is_comptime = false,
+            .alignment = 0,
+        };
+    }
+    return @Type(.{
+        .Struct = .{
+            .layout = .auto,
+            .fields = fields[0..],
+            .decls = &[_]std.builtin.Type.Declaration{},
+            .is_tuple = false,
+        },
+    });
+}
 
 pub const Recipe = struct {
     name: [:0]const u8,
     brewer: [:0]const u8,
-    grind: [:0]const u8,
+    grind_size: [:0]const u8,
     filter: [:0]const u8,
-    coffee: u8,
-    water_ml: u16,
-    water_temp: u8,
+    stirrer: [:0]const u8,
+    coffee_g: u16,
+    water_g: u16,
+    water_temp_c: u8,
     total_time: [2]u16,
     before_event: ?BeforeEvent = null,
     events: Events,
 
     pub fn init(alloc: std.mem.Allocator, json_recipe: []const u8) !Recipe {
-        const parsed = try std.json.parseFromSlice(InternalRecipe, alloc, json_recipe, .{
+        const parsed = std.json.parseFromSlice(comptime MakeRecipeDupeZ(Recipe), alloc, json_recipe, .{
             .allocate = .alloc_always,
-            .ignore_unknown_fields = true,
-        });
+            .ignore_unknown_fields = false,
+        }) catch |err| {
+            utils.fatal("failed to parse json_recipe with error: \n{s}", .{@errorName(err)});
+        };
         return Recipe{
             .name = try alloc.dupeZ(u8, parsed.value.name),
             .brewer = try alloc.dupeZ(u8, parsed.value.brewer),
-            .grind = try alloc.dupeZ(u8, parsed.value.grind),
+            .grind_size = try alloc.dupeZ(u8, parsed.value.grind_size),
             .filter = try alloc.dupeZ(u8, parsed.value.filter),
-            .coffee = parsed.value.coffee,
-            .water_ml = parsed.value.water_ml,
-            .water_temp = parsed.value.water_temp,
+            .stirrer = try alloc.dupeZ(u8, parsed.value.stirrer),
+            .coffee_g = parsed.value.coffee_g,
+            .water_g = parsed.value.water_g,
+            .water_temp_c = parsed.value.water_temp_c,
             .total_time = parsed.value.total_time,
             .before_event = parsed.value.before_event,
             .events = parsed.value.events,

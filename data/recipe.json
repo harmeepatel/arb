@@ -1,11 +1,12 @@
 {
     "name": "Tetsu 4:6",
     "brewer": "V60",
-    "grind": "coarse",
+    "grind_size": "coarse",
     "filter": "Paper Rinsed",
-    "coffee": 15,
-    "water_ml": 225,
-    "water_temp": 92,
+    "stirrer": "Small Spoon",
+    "coffee_g": 15,
+    "water_g": 225,
+    "water_temp_c": 92,
     "total_time": [
         210,
         0

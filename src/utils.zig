@@ -7,12 +7,14 @@ pub fn readInputFile(allocator: Allocator, path: []const u8) []const u8 {
         fatal("unable to open {s} : {s}", .{ path, @errorName(err) });
     };
     defer file.close();
+
     const fileSize = blk: {
         const stat = file.stat() catch |err| {
             fatal("unable to get stats for {s} : {s}", .{ path, @errorName(err) });
         };
         break :blk stat.size;
     };
+
     return blk: {
         const a = file.reader().readAllAlloc(allocator, fileSize) catch |err| {
             fatal("unable to read file {s} : {s}", .{ path, @errorName(err) });
@@ -30,7 +32,7 @@ pub fn getChars() [char_len]i32 {
     return a;
 }
 
-fn fatal(comptime msg: []const u8, args: anytype) noreturn {
+pub fn fatal(comptime msg: []const u8, args: anytype) noreturn {
     debug_print("\n" ++ msg ++ "\n", args);
     exit(1);
 }

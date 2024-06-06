@@ -9,7 +9,7 @@ const AspectRation = struct { x: f32, y: f32 };
 const buf_size_recipe = 1024 * 8;
 const padding_edge: f32 = 64.0;
 
-const path_json_recipe = "data/recipe.json";
+const path_json_recipe = "data/recipe.min.json";
 const path_font_regular = "font/line_seed_sans/LINESeedSans_Rg.otf";
 const path_font_bold = "font/line_seed_sans/LINESeedSans_Bd.otf";
 
@@ -76,16 +76,37 @@ fn drawLabel(r: *const Recipe) !void {
     const color = rl.Color.fromHSV(11, 0.25, 1);
 
     var buf_recipe_coffee_weight: [4]u8 = undefined;
-    const str_coffee: [:0]const u8 = try std.fmt.bufPrintZ(&buf_recipe_coffee_weight, "{d}g", .{r.coffee});
+    const str_coffee: [:0]const u8 = try std.fmt.bufPrintZ(&buf_recipe_coffee_weight, "{d}g", .{r.coffee_g});
 
     rl.drawRectangleRounded(rect, 0.2, 128, color);
     // labelText modifyies the pos
     labelText(&pos, "Author", r.name);
     labelText(&pos, "Brewer", r.brewer);
     labelText(&pos, "Coffee", str_coffee);
-    labelText(&pos, "Grind Size", r.grind);
+    labelText(&pos, "Grind Size", r.grind_size);
     // labelText(&pos, "Water", r.water_temp);
     labelText(&pos, "Filter", r.filter);
+
+    _ = labelText2(r);
+}
+fn labelText2(r: *const Recipe) *const [3][]const u8 {
+    var buf_recipe_coffee_weight: [4]u8 = undefined;
+    const str_coffee: [:0]const u8 = std.fmt.bufPrintZ(&buf_recipe_coffee_weight, "{d}g", .{r.coffee_g}) catch |err| {
+        utils.fatal("\nunable to convert []const u8 to [:0]const u8: {s}\n", .{@errorName(err)});
+    };
+    const values = [_][]const u8{ r.name, r.brewer, str_coffee };
+    _ = values;
+    var a = std.StringHashMap([]const u8).init(aapa_alloc);
+    defer a.deinit();
+
+    a.put(r.name, "asdf") catch |err| {
+        utils.fatal("\nunable to put in hashmap with error: {s}\n", .{@errorName(err)});
+    };
+
+    const labels = [_][]const u8{ "asdf", "asdfasdf", "asdfsa" };
+    // print("\nlabels: {s}\n", .{labels});
+    // print("\nhashmap: {s}\n", .{a.get(r.name).?});
+    return &labels;
 }
 
 fn labelText(pos: *rl.Vector2, label: [:0]const u8, value: [:0]const u8) void {
