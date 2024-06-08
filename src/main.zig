@@ -10,8 +10,11 @@ const buf_size_recipe = 1024 * 8;
 const padding_edge: f32 = 64.0;
 
 const path_json_recipe = "data/recipe.min.json";
-const path_font_regular = "font/line_seed_sans/LINESeedSans_Rg.otf";
-const path_font_bold = "font/line_seed_sans/LINESeedSans_Bd.otf";
+const path_font = "font/gnu_free_font/";
+const path_font_regular = path_font ++ "Sans.ttf";
+const path_font_bold = path_font ++ "SansBold.ttf";
+// const path_font_regular = "font/line_seed_sans/LINESeedSans_Rg.otf";
+// const path_font_bold = "font/line_seed_sans/LINESeedSans_Bd.otf";
 
 var font_regular: rl.Font = undefined;
 var font_bold: rl.Font = undefined;
@@ -29,7 +32,7 @@ const aapa_alloc = aapa.allocator();
 
 pub fn main() !void {
     defer {
-        aapa.deinit();
+        _ = aapa.deinit();
         rl.closeWindow();
     }
 
@@ -46,12 +49,10 @@ pub fn main() !void {
 fn init() void {
     _ = rl.initWindow(screen_width, screen_heigt, "Aramse Recipe Builder");
     rl.setTargetFPS(1);
-    const load_font_size = 240;
+    const load_font_size = 512;
     var chars = utils.getChars();
     font_regular = rl.loadFontEx(path_font_regular, load_font_size, &chars);
     font_bold = rl.loadFontEx(path_font_bold, load_font_size, &chars);
-    // font_regular = rl.loadFont(path_font_regular);
-    // font_bold = rl.loadFont(path_font_bold);
 }
 
 fn update(r: *const Recipe) !void {
@@ -73,7 +74,7 @@ fn update(r: *const Recipe) !void {
 fn drawLabel(r: *const Recipe) !void {
     var pos = rl.Vector2.init(padding_edge, padding_edge);
     const rect = rl.Rectangle.init(pos.x, pos.y, aspect_ratio.x * 200, aspect_ratio.y * 200);
-    const color = rl.Color.fromHSV(11, 0.25, 1);
+    const color = rl.Color.fromHSV(180, 0.8, 0.85);
 
     var buf_recipe_coffee_weight: [4]u8 = undefined;
     const str_coffee: [:0]const u8 = try std.fmt.bufPrintZ(&buf_recipe_coffee_weight, "{d}g", .{r.coffee_g});
@@ -87,25 +88,47 @@ fn drawLabel(r: *const Recipe) !void {
     // labelText(&pos, "Water", r.water_temp);
     labelText(&pos, "Filter", r.filter);
 
-    _ = labelText2(r);
+    _ = try labelText2(&pos, r);
 }
 
-fn labelText2(r: *const Recipe) *const [3][]const u8 {
-    var buf_recipe_coffee_weight: [4]u8 = undefined;
-    const str_coffee: [:0]const u8 = std.fmt.bufPrintZ(&buf_recipe_coffee_weight, "{d}g", .{r.coffee_g}) catch |err| {
-        utils.fatal("\nunable to convert []const u8 to [:0]const u8: {s}\n", .{@errorName(err)});
-    };
-    const values = [_][]const u8{ r.name, r.brewer, str_coffee };
-    _ = values;
-    var a = std.StringHashMap([]const u8).init(aapa_alloc);
-    defer a.deinit();
+fn labelText2(pos: *rl.Vector2, r: *const Recipe) !*const [7][]const u8 {
+    _ = pos;
+    const pos_label = rl.Vector2.init(0, 0);
+    _ = pos_label;
 
-    a.put(r.name, "asdf") catch |err| {
-        utils.fatal("\nunable to put in hashmap with error: {s}\n", .{@errorName(err)});
-    };
-    const labels = [_][]const u8{ "asdf", "asdfasdf", "asdfsa" };
-    // print("\nlabels: {s}\n", .{labels});
-    // print("\nhashmap: {s}\n", .{a.get(r.name).?});
+    var buf: [64]u8 = undefined;
+    const str_coffee: [:0]const u8 = try std.fmt.bufPrintZ(&buf, "{d}g", .{r.coffee_g});
+    const str_water: [:0]const u8 = try std.fmt.bufPrintZ(&buf, "{d}g", .{r.water_g});
+
+    const labels = .{ "Author", "Brewer", "Coffee", "Grind Size", "Water", "Filter", "Stirrer" };
+    const values = .{ r.name, r.brewer, str_coffee, r.grind_size, str_water, r.filter, r.stirrer };
+
+    var max_label = std.ArrayList(u8).init(aapa_alloc);
+    var max_value = std.ArrayList(u8).init(aapa_alloc);
+
+    var max_label_len: usize = 0;
+    var max_value_len: usize = 0;
+    inline for (labels, values) |l, v| {
+        max_label_len = @max(l.len, max_label_len);
+        max_value_len = @max(v.len, max_value_len);
+    }
+    for (0..max_label_len) |_| {
+        try max_label.appendSlice("");
+    }
+    for (0..max_value_len) |_| {
+        try max_value.appendSlice(" ");
+    }
+    print("{d}\n", .{max_label_len});
+    print("{d}\n", .{max_value_len});
+
+    const size_font = 32;
+    const str_max_label = try std.fmt.bufPrintZ(&buf, "{s}", .{max_label.items});
+    const str_max_value = try std.fmt.bufPrintZ(&buf, "{s}", .{max_value.items});
+    const m_label = rl.measureTextEx(font_regular, str_max_label, size_font, 0);
+    const m_value = rl.measureTextEx(font_regular, str_max_value, size_font, 0);
+    print("{any}\n", .{m_label});
+    print("{any}\n", .{m_value});
+
     return &labels;
 }
 
